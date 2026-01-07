@@ -8,7 +8,10 @@ class AuthController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $userModel = new User();
             $userId = $userModel->register($_POST['name'], $_POST['email'], $_POST['password']);
-           
+            if ($userId) {
+                (new Wallet())->create($userId);
+                header('Location: index.php?action=login'); exit;
+            }
         }
         require __DIR__ . '/../../views/auth/register.php';
     }
