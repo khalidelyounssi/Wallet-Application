@@ -13,6 +13,8 @@ switch ($action) {
     case 'login':    (new AuthController())->login(); break;
     case 'logout':   (new AuthController())->logout(); break;
     
+    case 'dashboard':  (new WalletController())->index(); break;
+    case 'add_budget': (new WalletController())->addBudget(); break;
     
     
     default: header('Location: index.php?action=login'); break;
