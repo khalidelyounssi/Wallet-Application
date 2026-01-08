@@ -15,7 +15,12 @@ switch ($action) {
     
     case 'dashboard':  (new WalletController())->index(); break;
     case 'add_budget': (new WalletController())->addBudget(); break;
-    
+    case 'add_expense':(new ExpenseController())->add(); break;
+    // ...
+    case 'delete_expense':
+        (new ExpenseController())->delete();
+        break;
+    // ...
     
     default: header('Location: index.php?action=login'); break;
 }

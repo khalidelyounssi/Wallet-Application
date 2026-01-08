@@ -14,6 +14,7 @@ class WalletController {
         $wallet = $walletModel->getWallet($_SESSION['user_id']);
         
         $balance = $wallet ? $this->formatCurrency($wallet['budget']) : '0.00 DH';
+        $expenses = $wallet ? (new Expense())->getHistory($wallet['id']) : [];
 
         require __DIR__ . '/../../views/dashboard/index.php';
     }
