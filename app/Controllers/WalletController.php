@@ -10,11 +10,27 @@ class WalletController {
     public function index() {
         if (!isset($_SESSION['user_id'])) { header('Location: index.php?action=login'); exit; }
         
+        
         $walletModel = new Wallet();
         $wallet = $walletModel->getWallet($_SESSION['user_id']);
-        
+        $walletId = $wallet ? $wallet['id'] : null;
+
         $balance = $wallet ? $this->formatCurrency($wallet['budget']) : '0.00 DH';
         $expenses = $wallet ? (new Expense())->getHistory($wallet['id']) : [];
+
+        $categoryModel = new \App\Models\Category();
+    $categories = $categoryModel->getAll();
+
+
+        if ($walletId) {
+            if (isset($_GET['cat_id']) && !empty($_GET['cat_id'])) {
+                $expenses = (new Expense())->getByCategory($walletId, $_GET['cat_id']);
+            } else {
+                $expenses = (new Expense())->getHistory($walletId);
+            }
+        } else {
+            $expenses = [];
+        }
 
         require __DIR__ . '/../../views/dashboard/index.php';
     }

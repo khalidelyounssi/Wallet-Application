@@ -90,4 +90,20 @@ class Expense extends Transaction implements Calculable {
         $stmt->execute([':wid' => $walletId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+
+    public function getByCategory($walletId,$categoryId){
+
+        $query = "SELECT e.* ,c.name 
+                FROM expenses e
+                JOIN categories c ON e.category_id=c.id
+                WHERE e.wallet_id= :wid AND e.category_id = :cid
+                ORDER BY e.date DESC";
+
+         $stmt = $this->conn->prepare($query);
+         $stmt->execute([':wid'=>$walletId,':cid' => $categoryId ]);
+         return $stmt ->fetchAll(PDO::FETCH_ASSOC)  ;  
+    }
+
+    
 }

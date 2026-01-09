@@ -30,6 +30,22 @@
                     <?= isset($expenses) ? count($expenses) : 0 ?> Opérations
                 </span>
             </div>
+            <div class="card card-custom p-3 mb-4">
+            <form action="index.php" method="GET" class="d-flex gap-2 align-items-center">
+                <input type="hidden" name="action" value="dashboard">
+                
+                <label class="fw-bold text-secondary">Filtrer par :</label>
+                
+                <select name="cat_id" class="form-select w-auto" onchange="this.form.submit()">
+                    <option value="">Toutes les catégories</option>
+                    <?php foreach($categories as $cat): ?>
+                        <option value="<?= $cat['id'] ?>" <?= (isset($_GET['cat_id']) && $_GET['cat_id'] == $cat['id']) ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($cat['name']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </form>
+        </div>
 
             <?php if (empty($expenses)): ?>
                 <div class="text-center py-5">
@@ -53,6 +69,8 @@
                         </thead>
                         <tbody>
                             <?php foreach ($expenses as $exp): ?>
+
+
                                 <tr>
                                     <td>
                                         <span class="badge bg-light text-dark border p-2">
@@ -68,10 +86,20 @@
                                     <td class="text-muted small">
                                         <?= date('d M Y', strtotime($exp['date'])) ?>
                                     </td>
-                                    
-                                    <td class="text-end fw-bold text-danger">
-                                        - <?= number_format($exp['amount'], 2) ?> DH
-                                    </td>
+
+                                    <?php if ($exp['amount'] > 500): ?>
+    
+                                        <td class="text-end fw-bold text-danger">
+                                            <i class="fas fa-exclamation-triangle me-1"></i> - <?= number_format($exp['amount'], 2) ?> DH
+                                        </td>
+
+                                    <?php else: ?>
+
+                                        <td class="text-end fw-bold text-dark">
+                                            - <?= number_format($exp['amount'], 2) ?> DH
+                                        </td>
+
+                                    <?php endif; ?>
 
                                     <td class="text-center">
                                         <a href="index.php?action=delete_expense&id=<?= $exp['id'] ?>" 
