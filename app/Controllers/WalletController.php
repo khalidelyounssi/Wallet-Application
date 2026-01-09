@@ -31,6 +31,10 @@ class WalletController {
         } else {
             $expenses = [];
         }
+        $totalExpenses = 0;
+        foreach ($expenses as $exp) {
+            $totalExpenses += $exp['amount'];
+        }
 
         require __DIR__ . '/../../views/dashboard/index.php';
     }

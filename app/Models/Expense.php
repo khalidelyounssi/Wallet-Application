@@ -105,5 +105,44 @@ class Expense extends Transaction implements Calculable {
          return $stmt ->fetchAll(PDO::FETCH_ASSOC)  ;  
     }
 
-    
+    public function getById($id) {
+        $query = "SELECT * FROM expenses WHERE id = :exid";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([':exid' => $id]);
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC); 
+    }
+
+    public function update($id, $walletId, $categoryId, $title, $amount, $date) {
+        try {
+            $this->conn->beginTransaction();
+
+            $oldExpense = $this->getById($id);
+            $oldAmount = $oldExpense['amount'];
+
+            $difference = $amount - $oldAmount;
+
+            $query = "UPDATE expenses SET category_id = :cid, title = :title, amount = :amount, date = :date 
+                      WHERE id = :id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute([
+                ':cid' => $categoryId,
+                ':title' => $title,
+                ':amount' => $amount,
+                ':date' => $date,
+                ':id' => $id
+            ]);
+
+            $queryWallet = "UPDATE wallets SET budget = budget - :diff WHERE id = :wid";
+            $stmtWallet = $this->conn->prepare($queryWallet);
+            $stmtWallet->execute([':diff' => $difference, ':wid' => $walletId]);
+
+            $this->conn->commit();
+            return true;
+        } catch (\Exception $e) {
+            $this->conn->rollBack();
+            return false;
+        }
+    }
 }
